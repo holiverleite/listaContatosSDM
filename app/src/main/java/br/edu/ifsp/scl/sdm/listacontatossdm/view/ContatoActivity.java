@@ -62,6 +62,8 @@ public class ContatoActivity extends AppCompatActivity implements View.OnClickLi
         emailEditText.setText(contato.getEmail());
         emailEditText.setEnabled(false);
         salvarButton.setVisibility(View.GONE);
+
+        cancelarButton.setText("Voltar");
     }
 
     private void modoEdit(Contato contato) {

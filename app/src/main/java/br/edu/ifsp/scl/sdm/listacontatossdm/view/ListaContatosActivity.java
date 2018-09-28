@@ -25,6 +25,7 @@ import br.edu.ifsp.scl.sdm.listacontatossdm.model.Contato;
 public class ListaContatosActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     //Request_code para abertura de tela contatoActivity - MODO NOVO CONTATO
     private final int NOVO_CONTATO_REQUEST_CODE = 0;
+    private final int EDITAR_CONTATO_REQUEST_CODE = 1;
 
     // constante para passar parametros para tela contato acivity - MODO DETALHES
     public static final String CONTATO_EXTRA = "CONTATO_EXTRA";
@@ -47,29 +48,28 @@ public class ListaContatosActivity extends AppCompatActivity implements AdapterV
         listaContatosListView = findViewById(R.id.listaContatosListView);
 
         listaContatos = new ArrayList<>();
+        /*Usado para populara lista para teste*/
 //        preencheListaContatos();
-
 //        List<String> listaNomes = new ArrayList<>();
 //        for (Contato contato : listaContatos) {
 //            listaNomes.add(contato.getNome());
 //        }
-
-//        ArrayAdapter<String> listaContatosAdapter = new ArrayAdapter<>(this,
-//                android.R.layout.simple_list_item_1,listaNomes);
+//        ArrayAdapter<String> listaContatosAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,listaNomes);
 
         listaContatosAdapter = new ListaContatosAdapter(this, listaContatos);
         listaContatosListView.setAdapter(listaContatosAdapter);
 
+        // Necessario para funcionar o longpress
         registerForContextMenu(listaContatosListView);
 
         listaContatosListView.setOnItemClickListener(this);
     }
 
-    private void preencheListaContatos() {
-        for (int i = 0; i < 20; i++) {
-            listaContatos.add(new Contato("c" + i, "ifsp", "1234", "i@ifsp"));
-        }
-    }
+//    private void preencheListaContatos() {
+//        for (int i = 0; i < 20; i++) {
+//            listaContatos.add(new Contato("c" + i, "ifsp", "1234", "i@ifsp"));
+//        }
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -78,14 +78,18 @@ public class ListaContatosActivity extends AppCompatActivity implements AdapterV
         return true;
     }
 
+    /*Captura toque nos elementos de menu*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.configuracaoMenuItem:
+                Intent configuracoesIntent = new Intent(this, ConfiguracoesActivity.class);
+                startActivity(configuracoesIntent);
                 return true;
             case R.id.novoContatoMenuItem:
-                // ABRINDO TELA NOVO CONTATO
-                Intent novoContatoIntent = new Intent(this, ContatoActivity.class);
+                //Abrindo tela novo contato
+                Intent novoContatoIntent = new Intent("NOVO_CONTATO_ACTION"); // Definido no Manifest
+//                Intent novoContatoIntent = new Intent(this, ContatoActivity.class);
                 startActivityForResult(novoContatoIntent,NOVO_CONTATO_REQUEST_CODE);
                 return true;
             case R.id.sairMenuItem:
@@ -146,6 +150,7 @@ public class ListaContatosActivity extends AppCompatActivity implements AdapterV
         return true;
     }
 
+    // Executado pelo listener do ListView
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Contato contato = listaContatos.get(position);
