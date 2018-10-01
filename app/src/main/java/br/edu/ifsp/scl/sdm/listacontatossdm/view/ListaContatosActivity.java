@@ -31,6 +31,8 @@ public class ListaContatosActivity extends AppCompatActivity implements AdapterV
     public static final String CONTATO_EXTRA = "CONTATO_EXTRA";
     public static final String CONTATO_EDIT = "CONTATO_EDIT";
 
+    public static final String INDEX_LIST_VIEW = "INDEX_LIST_VIEW";
+
     //Referencia para as views
     private ListView listaContatosListView;
 
@@ -113,11 +115,22 @@ public class ListaContatosActivity extends AppCompatActivity implements AdapterV
                         Toast.makeText(this,"Novo contato adicionado",Toast.LENGTH_SHORT).show();
                     }
                     // notifico adapter
-                } else {
-                    if (resultCode == RESULT_CANCELED) {
+                }
+                if (resultCode == RESULT_CANCELED) {
                         // nao faria nada
                         Toast.makeText(this,"Cadastro Cancelado",Toast.LENGTH_SHORT).show();
+                }
+
+            case EDITAR_CONTATO_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    Contato editarContato = (Contato) data.getSerializableExtra(CONTATO_EDIT);
+                    int index = data.getIntExtra(INDEX_LIST_VIEW, -1);
+                    if (index != -1) {
+                        listaContatos.set(index,editarContato);
+                        Toast.makeText(this,"Contato Atualizado!", Toast.LENGTH_SHORT).show();
                     }
+                    listaContatosAdapter.notifyDataSetChanged();
+                    break;
                 }
         }
     }
@@ -134,9 +147,10 @@ public class ListaContatosActivity extends AppCompatActivity implements AdapterV
 
         switch (item.getItemId()) {
             case R.id.editarContatoMenuItem:
-                Intent editContato = new Intent(this,ContatoActivity.class);
-                editContato.putExtra(CONTATO_EDIT, contato);
-                startActivity(editContato);
+                abrirTelaEditarContato(contato,infoMenu.position);
+//                Intent editContato = new Intent(this,ContatoActivity.class);
+//                editContato.putExtra(CONTATO_EDIT, contato);
+//                startActivity(editContato);
                 return true;
             case R.id.ligatContatoMenuItem:
                 return true;
@@ -150,14 +164,23 @@ public class ListaContatosActivity extends AppCompatActivity implements AdapterV
         return true;
     }
 
+    private void abrirTelaEditarContato(Contato contato, int position) {
+        Intent editarContatoIntent = new Intent(this,ContatoActivity.class);
+
+        editarContatoIntent.putExtra(CONTATO_EDIT,contato);
+        editarContatoIntent.putExtra(INDEX_LIST_VIEW, position);
+        editarContatoIntent.setAction(CONTATO_EDIT);
+        startActivityForResult(editarContatoIntent, EDITAR_CONTATO_REQUEST_CODE);
+    }
+
     // Executado pelo listener do ListView
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Contato contato = listaContatos.get(position);
-
         Intent detalhesContatoIntent = new Intent(this,ContatoActivity.class);
 
         detalhesContatoIntent.putExtra(CONTATO_EXTRA,contato);
+        detalhesContatoIntent.setAction(CONTATO_EXTRA);
         startActivity(detalhesContatoIntent);
     }
 }
